@@ -10,7 +10,7 @@ module.exports = {
         if (company.length !== 0)
             return res.send({message: `Company name "${name}" is already in use`});
 
-        const company = await Company.create(req.body);
+        company = await Company.create(req.body);
 
         return res.json(company);
     },
