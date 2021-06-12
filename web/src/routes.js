@@ -6,6 +6,7 @@ import Header from './components/template/header/Header';
 import Login from './pages/login/Login';
 import Home from './pages/home/Home';
 import Users from './pages/users/Users';
+import InactiveUsers from './pages/users/inactive/InactiveUsers';
 
 function PrivateRoute({ component: Component, ...rest }) {
     const { signed } = useAuth();
@@ -29,7 +30,8 @@ export default function Routes() {
             <Switch>
                 <Route exact path='/' component={Login}/>
                 <PrivateRoute path='/home' component={Home}/>
-                <PrivateRoute path='/users' component={Users}/>
+                <PrivateRoute exact path='/users' component={Users}/>
+                <PrivateRoute path='/users/inactive' component={InactiveUsers}/>
             </Switch>
         </BrowserRouter>
     );

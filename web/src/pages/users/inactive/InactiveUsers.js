@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../services/api';
+import api from '../../../services/api';
 import useStyles from './style';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,14 +8,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import TechDisplay from '../../components/techDisplay/TechDisplay';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import TechDisplay from '../../../components/techDisplay/TechDisplay';
 import SearchIcon from '@material-ui/icons/Search';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-export default function Users() {
+export default function InactiveUsers() {
     const classes = useStyles();
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState('');
@@ -28,7 +28,7 @@ export default function Users() {
             try {
                 if (search.length === 0) {
                     setLoading(true);
-                    const response = await api.get(`/users?page=${page}`, {
+                    const response = await api.get(`/users?page=${page}&status=${false}`, {
                         headers: {
                             Authorization: localStorage.getItem('token')
                         }
@@ -39,7 +39,6 @@ export default function Users() {
                     setLoading(false);
                 }
             } catch(ex) {
-                setLoading(false);
                 alert('Não foi possível recuperar usuários do banco de dados. Tente novamente mais tarde.');
             }
         }
@@ -51,7 +50,7 @@ export default function Users() {
             try {
                 if (search.length >= 1) {
                     setLoading(true);
-                    const response = await api.get(`/users?search=${search}`, {
+                    const response = await api.get(`/users?search=${search}&status=${false}`, {
                         headers: {
                             Authorization: localStorage.getItem('token')
                         }
@@ -62,14 +61,13 @@ export default function Users() {
                     setLoading(false);
                 }
             } catch(ex) {
-                setLoading(false);
                 alert('Não foi possível recuperar usuários do banco de dados. Tente novamente mais tarde.');
             }
         }
         searchUsers();
     }, [search]);
 
-    async function handleDeleteUser(id) {
+    async function handleActivateUser(id) {
         try {
             const response = await api.post(`/users/changeStatus/${id}`, {}, {
                 headers: {
@@ -81,12 +79,12 @@ export default function Users() {
                 setUsers(users.filter(user => user._id !== id));
             }
         } catch(ex) {
-            alert('Houve um erro ao tentar inativar usuário. Tente novamente mais tarde.');
+            alert('Houve um erro ao tentar ativar usuário. Tente novamente mais tarde.');
         }
     }
 
     function handleSearchKeyDown(evt) {
-        if (evt.code === 'Enter') {
+        if (evt.code === 'Enter' || evt.code === 'NumpadEnter') {
             setSearch(evt.target.value);
         }
     }
@@ -101,14 +99,14 @@ export default function Users() {
 
     return(
         <div className={classes.container}>
-            <h1 className={classes.title}>Usuários</h1>
+            <h1 className={classes.title}>Usuários Inativos</h1>
 
             <div className={classes.interationDiv}>
                 <div className={classes.searchDiv}>
                     <SearchIcon className={classes.searchIcon}/>
                     <input className={classes.searchInput} placeholder='Pesquisar' type='text' onKeyDown={handleSearchKeyDown}/>
                 </div>
-                <Link to='/users/inactive' className={classes.seeInactiveUsers}>Visualizar usuários inativos</Link>
+                <Link to='/users' className={classes.seeInactiveUsers}>Retornar para usuários ativos</Link>
             </div>
             
             <TableContainer className={classes.table}>
@@ -131,7 +129,7 @@ export default function Users() {
                                 Tecnologias
                             </TableCell>
                             <TableCell padding='none' align="center" style={{width: '5%', minWidth: '50px', borderBottom: '1px solid var(--darkBlue)', color: 'var(--darkBlue)'}}>
-                                Inativar
+                                Ativar
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -160,7 +158,7 @@ export default function Users() {
                                     ))}
                                 </TableCell>
                                 <TableCell className={classes.tableIconsColumn} padding='none' align='center'>
-                                    <DeleteOutlineIcon onClick={() => { handleDeleteUser(row._id) }} className={classes.tableIcons}/>
+                                    <PersonAddIcon onClick={() => { handleActivateUser(row._id) }} className={classes.tableIcons}/>
                                 </TableCell>
                             </TableRow>
                         ))

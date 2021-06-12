@@ -47,7 +47,7 @@ module.exports = {
 
         limit = parseInt(limit);
 
-        let users = {};
+        let users = [];
 
         if (search === ''){
             users = await User.paginate({status: status}, {sort: 'name_lowerCase', page, limit});
@@ -55,6 +55,15 @@ module.exports = {
             const searchRegex = new RegExp('^' + search.toLowerCase());
 
             users = await User.paginate({status: status, name_lowerCase: searchRegex}, {sort: 'name_lowerCase', page, limit});
+        }
+
+        // GETTING 'COMPANY' AND THE 'TECHS' OF THE USER FROM THE DATABASE
+        for (let user of users.docs) {
+            user.company = await Company.findById(user.company); 
+
+            for(let i = 0; i < user.techs.length; i++){
+                user.techs[i] = await Tech.findById(user.techs[i]);
+            }
         }
 
         return res.json(users);
@@ -67,7 +76,7 @@ module.exports = {
 
         await User.findByIdAndUpdate(user.id, user);
 
-        return res.json(user);
+        return res.status(204).send();
     },
 
     async update(req, res){
@@ -81,6 +90,6 @@ module.exports = {
     async delete(req, res) {
         await User.findByIdAndRemove(req.params.id);
 
-        return res.send("User successfully deleted");
+        return res.status(204).send();
     }
 }

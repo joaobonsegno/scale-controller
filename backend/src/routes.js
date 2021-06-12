@@ -19,7 +19,7 @@ routes.get('/session', AuthMiddleware, AuthController.getCurrentSession);
 // USER routes
 routes.get('/users', AuthMiddleware, UserController.findByName);
 routes.get('/users/:id', AuthMiddleware, UserController.findById);
-routes.put('/users/changeStatus/:id', AuthMiddleware,UserController.changeStatus);
+routes.post('/users/changeStatus/:id', AuthMiddleware,UserController.changeStatus);
 routes.post('/users', AuthMiddleware, UserController.create);
 routes.put('/users/:id', AuthMiddleware, UserController.update);
 routes.delete('/users/:id', AuthMiddleware, UserController.delete);

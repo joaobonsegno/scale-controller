@@ -44,6 +44,6 @@ module.exports = {
     async delete(req, res) {
         await Tech.findByIdAndRemove(req.params.id);
 
-        return res.send("Tech successfully deleted");
+        return res.status(204).send();
     }
 }
